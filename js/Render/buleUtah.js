@@ -156,7 +156,7 @@ class BuleUtah extends WebGL {
 
 (async () => {
     try {
-        const objFile = new ReadObjectFile("/../obj/teapot.obj");
+        const objFile = new ReadObjectFile("../../obj/teapot.obj");
         const { vertices, faces } = await objFile.loadFile();
 
         if (vertices && faces) {
