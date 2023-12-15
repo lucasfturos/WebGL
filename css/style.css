@@ -1,0 +1,116 @@
+* {
+    color: #272424;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0e0230;
+}
+
+.container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 #442e82;
+    transition: 0.3s;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 5px;
+    background-color: rgba(129, 87, 247, 0.5);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+#triangle-rotate {
+    position: absolute;
+}
+
+a {
+    display: block;
+    height: 40px;
+    width: 70%;
+    max-width: 200px;
+    line-height: 40px;
+    font-size: 18px;
+    text-decoration: none;
+    color: #333;
+    border: none;
+    letter-spacing: 2px;
+    text-align: center;
+    position: relative;
+    transition: all 0.35s;
+    margin: 5px 10px auto 10px;
+    background-color: rgba(129, 87, 247, 0.5);
+    border-radius: 5px;
+}
+
+a span {
+    position: relative;
+    z-index: 2;
+    color: #272424;
+}
+
+a:after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    transition: all 0.35s;
+}
+
+.btn1:after {
+    background: rgba(255, 0, 59, 0.5);
+    border-radius: 5px;
+}
+
+.btn2:after {
+    background: rgba(0, 255, 0, 0.5);
+    border-radius: 5px;
+}
+
+.btn3:after {
+    background: rgba(0, 0, 255, 0.5);
+    border-radius: 5px;
+}
+
+.btn4:after {
+    background: rgba(255, 204, 0, 0.5);
+    border-radius: 5px;
+}
+
+.btn5:after {
+    background: rgba(153, 0, 204, 0.5);
+    border-radius: 5px;
+}
+
+.btn6:after {
+    background: rgba(240, 12, 190, 0.5);
+    border-radius: 5px;
+}
+
+a:hover:after {
+    width: 100%;
+}
+
+p {
+    color: rgb(209, 194, 194);
+}
