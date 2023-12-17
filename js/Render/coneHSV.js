@@ -11,7 +11,7 @@ class ConeHSV extends WebGL {
         super(canvasID);
 
         // Setup Object
-        const radiusTop = 2.0;
+        const radiusTop = 0.0;
         const radiusBottom = 2.0;
         this.coneHeight = 4.5;
         const coneSlices = 20;
@@ -21,8 +21,7 @@ class ConeHSV extends WebGL {
             radiusTop,
             radiusBottom,
             coneSlices,
-            color,
-            // true
+            color
         );
 
         this.coneVertices = cylinder.vertices;
