@@ -66,13 +66,13 @@ class BuleUtah extends WebGL {
             this.gl.STATIC_DRAW
         );
 
-        const positionAttr = this.gl.getAttribLocation(
+        const posAttr = this.gl.getAttribLocation(
             this.program,
             "vertPosition"
         );
 
         this.gl.vertexAttribPointer(
-            positionAttr,
+            posAttr,
             3,
             this.gl.FLOAT,
             this.gl.FALSE,
@@ -80,7 +80,7 @@ class BuleUtah extends WebGL {
             0
         );
 
-        this.gl.enableVertexAttribArray(positionAttr);
+        this.gl.enableVertexAttribArray(posAttr);
     }
 
     setupMatrices() {
@@ -99,7 +99,7 @@ class BuleUtah extends WebGL {
             this.viewMatrix,
             [0.0, 0.0, 11.0],
             [0.0, 2.0, 0.0],
-            [0.0, 1.0, 0.0]
+            [0.0, 2.0, 0.0]
         );
         mat4.perspective(
             this.projMatrix,
@@ -124,13 +124,20 @@ class BuleUtah extends WebGL {
     render() {
         const identityMatrix = mat4.create();
         const yRotationMatrix = mat4.create();
+
         const loop = () => {
             let angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
             angle *= -1;
 
             mat4.identity(this.worldMatrix);
-            mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 1]);
-            mat4.mul(this.worldMatrix, yRotationMatrix, identityMatrix);
+
+            const escalaX = 1.0;
+            const escalaY = 1.0;
+            const escalaZ = 1.0;
+
+            mat4.scale(this.worldMatrix, this.worldMatrix, [escalaX, escalaY, escalaZ]);
+            mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
+            mat4.multiply(this.worldMatrix, yRotationMatrix, this.worldMatrix);
 
             this.gl.uniformMatrix4fv(
                 this.matWorldUniform,
@@ -157,6 +164,8 @@ class BuleUtah extends WebGL {
 (async () => {
     try {
         const objFile = new ReadObjectFile("/WebGL/obj/teapot.obj");
+        // const objFile = new ReadObjectFile("../../obj/cow.obj");
+
         const { vertices, faces } = await objFile.loadFile();
 
         if (vertices && faces) {

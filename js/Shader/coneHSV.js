@@ -2,7 +2,6 @@ export const vertexShaderSrc = `
 precision mediump float;
 
 attribute vec3 vertPosition;
-attribute vec3 vertColor;
 
 varying vec3 fragColor;
 
@@ -11,7 +10,6 @@ uniform mat4 mView;
 uniform mat4 mProj;
 uniform float height;
 
-// Função para converter HSV para RGB
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
@@ -19,10 +17,7 @@ vec3 hsv2rgb(vec3 c) {
 }
 
 void main() {
-    // Ajustando a orientação e a posição da cor
     float colorTransition = vertPosition.y / height;
-    
-    // Convertendo o espectro de cores HSV para RGB
     vec3 hsvColor = vec3(colorTransition, 1.0, 1.0);
     vec3 rgbColor = hsv2rgb(hsvColor);
 

@@ -1,7 +1,4 @@
-import {
-    generateCylinderIndices,
-    generateCylinderVertices,
-} from "../Util/cylinder.js";
+import { Cylinder } from "../Util/cylinder.js";
 import { WebGL } from "../app.js";
 import {
     glMatrix,
@@ -14,19 +11,22 @@ class ConeHSV extends WebGL {
         super(canvasID);
 
         // Setup Object
-        const radiusTop = 0.0;
+        const radiusTop = 2.0;
         const radiusBottom = 2.0;
         this.coneHeight = 4.5;
         const coneSlices = 20;
-        const color = [1.0, 0.0, 0.0];
-        this.coneVertices = generateCylinderVertices(
+        const color = [0.0, 0.0, 0.0];
+        const cylinder = new Cylinder(
             this.coneHeight,
             radiusTop,
             radiusBottom,
             coneSlices,
-            color
+            color,
+            // true
         );
-        this.coneIndices = generateCylinderIndices(coneSlices);
+
+        this.coneVertices = cylinder.vertices;
+        this.coneIndices = cylinder.indices;
 
         // Setup WebGL
         this.setupShaders();
@@ -60,7 +60,10 @@ class ConeHSV extends WebGL {
 
         this.gl.useProgram(this.program);
 
-        const heightLocation = this.gl.getUniformLocation(this.program, "height");
+        const heightLocation = this.gl.getUniformLocation(
+            this.program,
+            "height"
+        );
         this.gl.uniform1f(heightLocation, this.coneHeight);
     }
 
@@ -82,7 +85,6 @@ class ConeHSV extends WebGL {
         );
 
         const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
-        const colorAttr = this.gl.getAttribLocation(this.program, "vertColor");
 
         this.gl.vertexAttribPointer(
             posAttr,
@@ -93,17 +95,7 @@ class ConeHSV extends WebGL {
             0
         );
 
-        this.gl.vertexAttribPointer(
-            colorAttr,
-            3,
-            this.gl.FLOAT,
-            this.gl.FALSE,
-            6 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
-        );
-
         this.gl.enableVertexAttribArray(posAttr);
-        this.gl.enableVertexAttribArray(colorAttr);
     }
 
     setupMatrices() {
@@ -118,12 +110,7 @@ class ConeHSV extends WebGL {
         this.viewMatrix = mat4.create();
         this.projMatrix = mat4.create();
 
-        mat4.lookAt(
-            this.viewMatrix,
-            [0, -12, 0],
-            [0, 0, 0],
-            [0, 0, -1]
-        );
+        mat4.lookAt(this.viewMatrix, [0, -12, 0], [0, 0, 0], [0, 0, -1]);
 
         mat4.perspective(
             this.projMatrix,
@@ -147,7 +134,7 @@ class ConeHSV extends WebGL {
 
     render() {
         let angle = 0.0;
-        const rotationAxis = [0, 1, 1];
+        const rotationAxis = [1, 1, 0];
         const identityMatrix = mat4.create();
         const rotationMatrix = mat4.create();
 
@@ -178,4 +165,4 @@ class ConeHSV extends WebGL {
     }
 }
 
-new ConeHSV('cone-hsv');
+new ConeHSV("cone-hsv");

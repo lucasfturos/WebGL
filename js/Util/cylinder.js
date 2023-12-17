@@ -1,75 +1,134 @@
-export const generateCylinderVertices = (
-    height,
-    radiusTop,
-    radiusBottom,
-    numSegments,
-    color
-) => {
-    const vertices = [];
-    const angleIncrement = (2 * Math.PI) / numSegments;
+export class Cylinder {
+    constructor(
+        height,
+        radiusTop,
+        radiusBottom,
+        numSegments,
+        color = [1.0, 0.0, 0.0],
+        textureMode = false
+    ) {
+        this.height = height;
+        this.radiusTop = radiusTop;
+        this.radiusBottom = radiusBottom;
+        this.numSegments = numSegments;
+        this.textureMode = textureMode;
+        this.color = color;
 
-    for (let i = 0; i < numSegments; i++) {
-        const angle = i * angleIncrement;
-        const x = radiusTop * Math.cos(angle);
-        const y = radiusTop * Math.sin(angle);
-        vertices.push(x, y, height / 2, ...color.slice(0, 3));
+        this.vertices = [];
+        this.indices = [];
+        this.uvs = [];
+
+        this.generateVertices();
+        this.generateIndices();
     }
 
-    for (let i = 0; i < numSegments; i++) {
-        const angle = i * angleIncrement;
-        const x = radiusBottom * Math.cos(angle);
-        const y = radiusBottom * Math.sin(angle);
-        vertices.push(x, y, -height / 2, ...color.slice(0, 3));
+    generateVertices() {
+        const angleIncrement = (2 * Math.PI) / this.numSegments;
+
+        for (let i = 0; i < this.numSegments; i++) {
+            const angle = i * angleIncrement;
+            const x = this.radiusTop * Math.cos(angle);
+            const y = this.radiusTop * Math.sin(angle);
+            if (this.textureMode) {
+                this.vertices.push(
+                    x,
+                    y,
+                    this.height / 2,
+                    ...this.uvs.slice(-2)
+                );
+            } else {
+                this.vertices.push(
+                    x,
+                    y,
+                    this.height / 2,
+                    ...this.color.slice(0, 3)
+                );
+            }
+        }
+
+        for (let i = 0; i < this.numSegments; i++) {
+            const angle = i * angleIncrement;
+            const x = this.radiusBottom * Math.cos(angle);
+            const y = this.radiusBottom * Math.sin(angle);
+            if (this.textureMode) {
+                this.vertices.push(
+                    x,
+                    y,
+                    -this.height / 2,
+                    ...this.uvs.slice(-2)
+                );
+            } else {
+                this.vertices.push(
+                    x,
+                    y,
+                    -this.height / 2,
+                    ...this.color.slice(0, 3)
+                );
+            }
+        }
+
+        for (let i = 0; i < this.numSegments; i++) {
+            const current = i * 2;
+            const next = (i + 1) % this.numSegments;
+
+            if (this.textureMode) {
+                this.vertices.push(
+                    this.radiusTop * Math.cos(current * angleIncrement),
+                    this.radiusTop * Math.sin(current * angleIncrement),
+                    this.height / 2,
+                    ...this.uvs.slice(-4, -2)
+                );
+                this.vertices.push(
+                    this.radiusBottom * Math.cos(next * angleIncrement),
+                    this.radiusBottom * Math.sin(next * angleIncrement),
+                    -this.height / 2,
+                    ...this.uvs.slice(-2)
+                );
+            } else {
+                this.vertices.push(
+                    this.radiusTop * Math.cos(current * angleIncrement),
+                    this.radiusTop * Math.sin(current * angleIncrement),
+                    this.height / 2,
+                    ...this.color.slice(0, 3)
+                );
+                this.vertices.push(
+                    this.radiusBottom * Math.cos(next * angleIncrement),
+                    this.radiusBottom * Math.sin(next * angleIncrement),
+                    -this.height / 2,
+                    ...this.color.slice(0, 3)
+                );
+            }
+        }
     }
 
-    for (let i = 0; i < numSegments; i++) {
-        const current = i;
-        const next = (i + 1) % numSegments;
+    generateIndices() {
+        for (let i = 0; i < this.numSegments; i++) {
+            const current = i;
+            const next = (i + 1) % this.numSegments;
 
-        vertices.push(
-            radiusTop * Math.cos(i * angleIncrement),
-            radiusTop * Math.sin(i * angleIncrement),
-            height / 2,
-            ...color.slice(0, 3)
-        );
-        vertices.push(
-            radiusBottom * Math.cos(next * angleIncrement),
-            radiusBottom * Math.sin(next * angleIncrement),
-            -height / 2,
-            ...color.slice(0, 3)
-        );
+            this.indices.push(current, next, current + this.numSegments);
+            this.indices.push(
+                next + this.numSegments,
+                current + this.numSegments,
+                next
+            );
+            this.indices.push(current, next, current + this.numSegments);
+        }
+
+        for (let i = 0; i < this.numSegments; i++) {
+            this.indices.push(i, (i + 1) % this.numSegments, this.numSegments);
+            this.indices.push(
+                i + this.numSegments,
+                ((i + 1) % this.numSegments) + this.numSegments,
+                2 * this.numSegments + 1
+            );
+
+            this.indices.push(i, (i + 1) % this.numSegments, this.numSegments);
+            this.indices.push(
+                i + this.numSegments,
+                ((i + 1) % this.numSegments) + this.numSegments,
+                2 * this.numSegments + 1
+            );
+        }
     }
-
-    return vertices;
-};
-
-export const generateCylinderIndices = (numSegments) => {
-    const indices = [];
-
-    for (let i = 0; i < numSegments; i++) {
-        const current = i;
-        const next = (i + 1) % numSegments;
-
-        indices.push(current, next, current + numSegments);
-        indices.push(next + numSegments, current + numSegments, next);
-        indices.push(current, next, current + numSegments);
-    }
-
-    for (let i = 0; i < numSegments; i++) {
-        indices.push(i, (i + 1) % numSegments, numSegments);
-        indices.push(
-            i + numSegments,
-            ((i + 1) % numSegments) + numSegments,
-            2 * numSegments + 1
-        );
-
-        indices.push(i, (i + 1) % numSegments, numSegments);
-        indices.push(
-            i + numSegments,
-            ((i + 1) % numSegments) + numSegments,
-            2 * numSegments + 1
-        );
-    }
-
-    return indices;
-};
+}
