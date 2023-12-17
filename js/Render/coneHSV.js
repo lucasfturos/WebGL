@@ -15,13 +15,11 @@ class ConeHSV extends WebGL {
         const radiusBottom = 2.0;
         this.coneHeight = 4.5;
         const coneSlices = 20;
-        const color = [0.0, 0.0, 0.0];
         const cylinder = new Cylinder(
             this.coneHeight,
             radiusTop,
             radiusBottom,
-            coneSlices,
-            color
+            coneSlices
         );
 
         this.coneVertices = cylinder.vertices;
@@ -133,7 +131,7 @@ class ConeHSV extends WebGL {
 
     render() {
         let angle = 0.0;
-        const rotationAxis = [1, 1, 0];
+        const rotationAxis = [1, 1, 1];
         const identityMatrix = mat4.create();
         const rotationMatrix = mat4.create();
 
