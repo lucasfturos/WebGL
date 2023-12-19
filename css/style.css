@@ -107,6 +107,11 @@ a:after {
     border-radius: 5px;
 }
 
+.btn7:after {
+    background: rgba(14, 255, 203, 0.5);
+    border-radius: 5px;
+}
+
 a:hover:after {
     width: 100%;
 }
