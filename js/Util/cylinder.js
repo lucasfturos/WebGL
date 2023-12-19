@@ -4,7 +4,7 @@ export class Cylinder {
         radiusTop,
         radiusBottom,
         numSegments,
-        color = [1.0, 0.0, 0.0],
+        color = [1.0, 0.0, 0.0, 1.0],
         textureMode = false
     ) {
         this.height = height;
@@ -46,7 +46,7 @@ export class Cylinder {
                     xTop,
                     yTop,
                     this.height / 2,
-                    ...this.color.slice(0, 3)
+                    ...this.color.slice(0, 4)
                 );
             }
         }
@@ -65,7 +65,7 @@ export class Cylinder {
                     xBottom,
                     yBottom,
                     -this.height / 2,
-                    ...this.color.slice(0, 3)
+                    ...this.color.slice(0, 4)
                 );
             }
         }
@@ -86,7 +86,7 @@ export class Cylinder {
                     this.radiusBottom * Math.cos(next * angleIncrement),
                     this.radiusBottom * Math.sin(next * angleIncrement),
                     -this.height / 2,
-                    ...this.color.slice(0, 3)
+                    ...this.color.slice(0, 4)
                 );
             }
         }

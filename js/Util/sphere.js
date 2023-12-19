@@ -2,7 +2,7 @@ export class Sphere {
     constructor(
         radius,
         numSegments,
-        color = [1.0, 0.0, 0.0],
+        color = [1.0, 0.0, 0.0, 1.0],
         textureMode = false
     ) {
         this.radius = radius;

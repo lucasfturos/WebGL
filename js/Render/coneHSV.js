@@ -88,7 +88,7 @@ class ConeHSV extends WebGL {
             3,
             this.gl.FLOAT,
             this.gl.FALSE,
-            6 * Float32Array.BYTES_PER_ELEMENT,
+            7 * Float32Array.BYTES_PER_ELEMENT,
             0
         );
 
