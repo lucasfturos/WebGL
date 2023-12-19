@@ -1,6 +1,4 @@
-pages/casquinha.html
-js/Render/casquinha.js
-js/Shader/casquinha.js
+# File obj
 obj/bunny.obj
 obj/cow.obj
 obj/cruiser.obj
@@ -8,3 +6,5 @@ obj/f-16.obj
 obj/f16.obj
 obj/junc.obj
 obj/suzanne.obj
+
+# File js

@@ -1,5 +1,5 @@
-import { Cylinder } from "../Util/cylinder.js";
 import { WebGL } from "../app.js";
+import { Cylinder } from "../Util/cylinder.js";
 import {
     glMatrix,
     mat4,
@@ -107,7 +107,12 @@ class ConeHSV extends WebGL {
         this.viewMatrix = mat4.create();
         this.projMatrix = mat4.create();
 
-        mat4.lookAt(this.viewMatrix, [0, -12, 0], [0, 0, 0], [0, 0, -1]);
+        mat4.lookAt(
+            this.viewMatrix,
+            [0, -12, 0],
+            [0, 0, 0],
+            [0, 0, -1]
+        );
 
         mat4.perspective(
             this.projMatrix,
