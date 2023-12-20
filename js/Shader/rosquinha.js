@@ -1,8 +1,8 @@
 export const vertexShaderSrc = `
 precision mediump float;
 
-attribute vec3 vertPosition;
-attribute vec2 vertTexCoord;
+attribute vec3 vPosition;
+attribute vec2 vTexCoord;
 
 varying vec2 fragTexCoord;
 
@@ -11,8 +11,8 @@ uniform mat4 mView;
 uniform mat4 mProj;
 
 void main() {
-    fragTexCoord = vertTexCoord;
-    gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+    fragTexCoord = vTexCoord;
+    gl_Position = mProj * mView * mWorld * vec4(vPosition, 1.0);
 }
 `;
 

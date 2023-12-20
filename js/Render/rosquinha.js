@@ -71,8 +71,8 @@ class Rosquinha extends WebGL {
             this.gl.STATIC_DRAW
         );
 
-        const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
-        const texCoordAttr = this.gl.getAttribLocation(this.program, "vertTexCoord");
+        const posAttr = this.gl.getAttribLocation(this.program, "vPosition");
+        const texCoordAttr = this.gl.getAttribLocation(this.program, "vTexCoord");
 
         this.gl.vertexAttribPointer(
             posAttr,
@@ -88,7 +88,7 @@ class Rosquinha extends WebGL {
             this.gl.FLOAT,
             this.gl.FALSE,
             5 * Float32Array.BYTES_PER_ELEMENT,
-            2 * Float32Array.BYTES_PER_ELEMENT
+            3 * Float32Array.BYTES_PER_ELEMENT
         );
 
         this.gl.enableVertexAttribArray(posAttr);
@@ -131,17 +131,17 @@ class Rosquinha extends WebGL {
 
     setupMatrices() {
         this.worldMatrix = mat4.create();
-        this.viewMatrix = mat4.create();
-        this.projMatrix = mat4.create();
+        const viewMatrix = mat4.create();
+        const projMatrix = mat4.create();
 
         mat4.lookAt(
-            this.viewMatrix,
+            viewMatrix,
             [0.0, 0.0, -4.5],
             [0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0]
         );
         mat4.perspective(
-            this.projMatrix,
+            projMatrix,
             glMatrix.toRadian(45),
             this.canvas.width / this.canvas.height,
             0.1,
@@ -151,12 +151,12 @@ class Rosquinha extends WebGL {
         this.gl.uniformMatrix4fv(
             this.mViewUniform,
             this.gl.FALSE,
-            this.viewMatrix
+            viewMatrix
         );
         this.gl.uniformMatrix4fv(
             this.mProjUniform,
             this.gl.FALSE,
-            this.projMatrix
+            projMatrix
         );
     }
 
