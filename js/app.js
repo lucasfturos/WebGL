@@ -12,6 +12,7 @@ export class WebGL {
         this.setupWebGL();
         this.setupShaders();
         this.setupBuffers();
+        this.setupTexture();
         this.setupMatrices();
         this.render();
     }
@@ -43,6 +44,8 @@ export class WebGL {
     }
 
     setupBuffers() { }
+
+    setupTexture() { }
 
     setupMatrices() { }
 

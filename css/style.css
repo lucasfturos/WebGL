@@ -42,6 +42,11 @@ body {
     position: absolute;
 }
 
+canvas {
+    width: 800px;
+    height: 600px;
+}
+
 a {
     display: block;
     height: 40px;
