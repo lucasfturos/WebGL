@@ -99,25 +99,6 @@ class Casquinha extends WebGL {
             this.coneIndices
         );
 
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.sphereBuffers.vertexBuffer);
-        this.gl.vertexAttribPointer(
-            this.posAttr,
-            3,
-            this.gl.FLOAT,
-            this.gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            0
-        );
-        this.gl.vertexAttribPointer(
-            this.texCoordAttr,
-            2,
-            this.gl.FLOAT,
-            this.gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
-        );
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.coneBuffers.vertexBuffer);
         this.gl.vertexAttribPointer(
             this.posAttr,
             3,
