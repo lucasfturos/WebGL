@@ -3,11 +3,15 @@ export class ReadObjectFile {
         this.filePath = filePath;
         this.vertices = [];
         this.faces = [];
+        this.texture = [];
+        this.normal = [];
     }
 
     reset() {
         this.vertices = [];
         this.faces = [];
+        this.texture = [];
+        this.normal = [];
     }
 
     parseLine(line) {
@@ -34,6 +38,14 @@ export class ReadObjectFile {
         v2 = v2.split('/')[0];
         v3 = v3.split('/')[0];
         this.faces.push(+v1 - 1, +v2 - 1, +v3 - 1);
+    }
+
+    'vt'(u, v) {
+        this.texture.push(+u, +v);
+    }
+
+    'vn'(x, y, z) {
+        this.normal.push(+x, +y, +z);
     }
 
     async loadFile() {

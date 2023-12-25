@@ -1,17 +1,18 @@
 export const vertexShaderSrc = `
 precision mediump float;
 
-attribute vec3 vertPosition;
-attribute vec2 vertTexCoord;
+attribute vec3 vPosition;
+attribute vec2 vTexCoord;
 
 varying vec2 fragTexCoord;
+
 uniform mat4 mWorld;
 uniform mat4 mView;
 uniform mat4 mProj;
 
 void main() {
-    fragTexCoord = vertTexCoord;
-    gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+    fragTexCoord = vTexCoord;
+    gl_Position = mProj * mView * mWorld * vec4(vPosition, 1.0);
 }
 `;
 
@@ -19,9 +20,14 @@ export const fragmentShaderSrc = `
 precision mediump float;
 
 varying vec2 fragTexCoord;
-uniform sampler2D sampler;
+
+uniform sampler2D iceCreamTexture;
+uniform sampler2D coneTexture;
 
 void main() {
-    gl_FragColor = texture2D(sampler, fragTexCoord);
+    vec4 iceCreamColor = texture2D(iceCreamTexture, fragTexCoord);
+    vec4 coneColor = texture2D(coneTexture, fragTexCoord);
+
+    gl_FragColor = mix(iceCreamColor, coneColor, 0.1);
 }
 `;

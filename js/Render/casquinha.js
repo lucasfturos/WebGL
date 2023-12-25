@@ -2,12 +2,10 @@ import { WebGL } from "../app.js";
 import { Sphere } from "../Util/sphere.js";
 import { Cylinder } from "../Util/cylinder.js";
 import {
-    vertexShaderSrc, fragmentShaderSrc
-} from "../Shader/casquinha.js";
-import {
     glMatrix,
     mat4,
 } from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm";
+import { vertexShaderSrc, fragmentShaderSrc } from "../Shader/casquinha.js";
 
 class Casquinha extends WebGL {
     constructor(canvasID) {
@@ -16,8 +14,7 @@ class Casquinha extends WebGL {
         // Setup WebGL
         this.setupShaders();
         this.setupBuffers();
-        this.setupTextureIce();
-        this.setupTextureWaffle();
+        this.setupTexture();
         this.setupMatrices();
         this.render();
     }
@@ -47,29 +44,63 @@ class Casquinha extends WebGL {
 
         this.gl.useProgram(this.program);
 
-        this.mWorldUniform = this.gl.getUniformLocation(
+        this.posAttr = this.gl.getAttribLocation(this.program, "vPosition");
+        this.texCoordAttr = this.gl.getAttribLocation(
             this.program,
-            "mWorld"
-        );
-        this.mViewUniform = this.gl.getUniformLocation(
-            this.program,
-            "mView"
-        );
-        this.mProjUniform = this.gl.getUniformLocation(
-            this.program,
-            "mProj"
+            "vTexCoord"
         );
 
+        this.mWorldUniform = this.gl.getUniformLocation(this.program, "mWorld");
+        this.mViewUniform = this.gl.getUniformLocation(this.program, "mView");
+        this.mProjUniform = this.gl.getUniformLocation(this.program, "mProj");
+        this.iceCreamTextureUniform = this.gl.getUniformLocation(
+            this.program,
+            "iceCreamTexture"
+        );
+        this.coneTextureUniform = this.gl.getUniformLocation(
+            this.program,
+            "coneTexture"
+        );
+
+        this.gl.uniform1i(this.iceCreamTextureUniform, 0);
+        this.gl.uniform1i(this.coneTextureUniform, 1);
     }
 
-    setupBuffersCone() {
+    createBuffer(vertices, indices) {
+        const vertexBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+        this.gl.bufferData(
+            this.gl.ARRAY_BUFFER,
+            new Float32Array(vertices),
+            this.gl.STATIC_DRAW
+        );
+
+        const indexBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        this.gl.bufferData(
+            this.gl.ELEMENT_ARRAY_BUFFER,
+            new Uint16Array(indices),
+            this.gl.STATIC_DRAW
+        );
+
+        return { vertexBuffer, indexBuffer };
+    }
+
+    setupBuffers() {
+        // Setup Esfera
+        this.radiusSphere = 2;
+        const numSegments = 20;
+        const sphere = new Sphere(this.radiusSphere, numSegments, [], true);
+        this.sphereVertices = sphere.vertices;
+        this.sphereIndices = sphere.indices;
+
         // Setup Cone
         const radiusTop = 2.0;
         const radiusBottom = 0.0;
-        this.coneHeight = 4.5;
+        const coneHeight = 4.5;
         const coneSegment = 20;
         const cylinder = new Cylinder(
-            this.coneHeight,
+            coneHeight,
             radiusTop,
             radiusBottom,
             coneSegment,
@@ -79,60 +110,18 @@ class Casquinha extends WebGL {
         this.coneVertices = cylinder.vertices;
         this.coneIndices = cylinder.indices;
 
-        this.coneVertexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.coneVertexBuffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            new Float32Array(this.coneVertices),
-            this.gl.DYNAMIC_DRAW
+        this.sphereBuffers = this.createBuffer(
+            this.sphereVertices,
+            this.sphereIndices
         );
 
-        this.coneIndexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.coneIndexBuffer);
-        this.gl.bufferData(
-            this.gl.ELEMENT_ARRAY_BUFFER,
-            new Uint16Array(this.coneIndices),
-            this.gl.DYNAMIC_DRAW
+        this.coneBuffers = this.createBuffer(
+            this.coneVertices,
+            this.coneIndices
         );
-    }
-
-    setupBuffersSphere() {
-        // Setup Esfera
-        this.radiusSphere = 2;
-        const numSegments = 20;
-        const sphere = new Sphere(this.radiusSphere, numSegments, [], true);
-        this.sphereVertices = sphere.vertices;
-        this.sphereIndices = sphere.indices;
-
-        this.sphereVertexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.sphereVertexBuffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            new Float32Array(this.sphereVertices),
-            this.gl.STATIC_DRAW
-        );
-
-        this.sphereIndexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(
-            this.gl.ELEMENT_ARRAY_BUFFER,
-            this.sphereIndexBuffer
-        );
-        this.gl.bufferData(
-            this.gl.ELEMENT_ARRAY_BUFFER,
-            new Uint16Array(this.sphereIndices),
-            this.gl.STATIC_DRAW
-        );
-    }
-
-    setupBuffers() {
-        this.setupBuffersSphere();
-        this.setupBuffersCone();
-
-        const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
-        const texCoordAttr = this.gl.getAttribLocation(this.program, "vertTexCoord");
 
         this.gl.vertexAttribPointer(
-            posAttr,
+            this.posAttr,
             3,
             this.gl.FLOAT,
             this.gl.FALSE,
@@ -140,50 +129,32 @@ class Casquinha extends WebGL {
             0
         );
         this.gl.vertexAttribPointer(
-            texCoordAttr,
+            this.texCoordAttr,
             2,
             this.gl.FLOAT,
             this.gl.FALSE,
             5 * Float32Array.BYTES_PER_ELEMENT,
             3 * Float32Array.BYTES_PER_ELEMENT
         );
-
-        this.gl.enableVertexAttribArray(posAttr);
-        this.gl.enableVertexAttribArray(texCoordAttr);
     }
 
-
-    setupTextureIce() {
-        this.iceTexture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.iceTexture);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-
-        this.gl.texImage2D(
-            this.gl.TEXTURE_2D,
-            0,
-            this.gl.RGBA,
-            this.gl.RGBA,
-            this.gl.UNSIGNED_BYTE,
-            document.getElementById("ice-cream")
-        );
-        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    setupTexture() {
+        this.iceTexture = this.loadTexture("ice-cream");
+        this.coneTexture = this.loadTexture("waffle");
     }
 
-    setupTextureWaffle() {
-        this.coneTexture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.coneTexture);
+    loadTexture(id) {
+        const texture = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
         this.gl.texParameteri(
             this.gl.TEXTURE_2D,
             this.gl.TEXTURE_WRAP_S,
-            this.gl.CLAMP_TO_EDGE
+            this.gl.REPEAT
         );
         this.gl.texParameteri(
             this.gl.TEXTURE_2D,
             this.gl.TEXTURE_WRAP_T,
-            this.gl.CLAMP_TO_EDGE
+            this.gl.REPEAT
         );
         this.gl.texParameteri(
             this.gl.TEXTURE_2D,
@@ -195,82 +166,145 @@ class Casquinha extends WebGL {
             this.gl.TEXTURE_MAG_FILTER,
             this.gl.LINEAR
         );
+
         this.gl.texImage2D(
             this.gl.TEXTURE_2D,
             0,
             this.gl.RGBA,
             this.gl.RGBA,
             this.gl.UNSIGNED_BYTE,
-            document.getElementById("waffle")
+            document.getElementById(id)
         );
+
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+
+        return texture;
     }
 
     setupMatrices() {
-        this.worldMatrix = mat4.create();
-        this.viewMatrix = mat4.create();
-        this.projMatrix = mat4.create();
+        this.worldMatrixSphere = mat4.create();
+        this.viewMatrixSphere = mat4.create();
+        this.projMatrixSphere = mat4.create();
+
+        this.worldMatrixCone = mat4.create();
+        this.viewMatrixCone = mat4.create();
+        this.projMatrixCone = mat4.create();
 
         mat4.lookAt(
-            this.viewMatrix,
+            this.viewMatrixSphere,
             [0.0, -12.0, 0.0],
-            [0.0, 0.0, 2.5],
+            [0.0, 0.0, -1.9],
             [0.0, 0.0, 1.0]
-
         );
         mat4.perspective(
-            this.projMatrix,
+            this.projMatrixSphere,
             glMatrix.toRadian(45),
             this.canvas.width / this.canvas.height,
-            0.1,
+            0.01,
             100.0
         );
 
-        this.gl.uniformMatrix4fv(
-            this.mViewUniform,
-            this.gl.FALSE,
-            this.viewMatrix
+        mat4.lookAt(
+            this.viewMatrixCone,
+            [0.0, -9.0, 0.0],
+            [0.0, 0.0, 2.5],
+            [0.0, 0.0, 1.0]
         );
-        this.gl.uniformMatrix4fv(
-            this.mProjUniform,
-            this.gl.FALSE,
-            this.projMatrix
+        mat4.perspective(
+            this.projMatrixCone,
+            glMatrix.toRadian(60),
+            this.canvas.width / this.canvas.height,
+            0.01,
+            100.0
         );
     }
 
     render() {
-        let angle = 0.0;
-        const rotationAxis = [0, 0, 1];
         const identityMatrix = mat4.create();
         const rotationMatrix = mat4.create();
 
         const loop = () => {
-            angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
-            angle *= -1;
-
-            mat4.rotate(rotationMatrix, identityMatrix, angle, rotationAxis);
-            mat4.identity(this.worldMatrix);
-            mat4.mul(this.worldMatrix, this.worldMatrix, rotationMatrix);
-
-            this.gl.uniformMatrix4fv(this.mWorldUniform, this.gl.FALSE, this.worldMatrix);
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-            // Renderiza o sorvete
-            this.gl.bindTexture(this.gl.TEXTURE_2D, this.iceTexture);
-            this.gl.activeTexture(this.gl.TEXTURE0);
-            this.gl.drawElements(this.gl.TRIANGLES, this.sphereIndices.length, this.gl.UNSIGNED_SHORT, 0);
+            const angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
+            const rotationAxis = [0, 0, 1];
 
-            // Renderiza a casquinha
-            this.gl.bindTexture(this.gl.TEXTURE_2D, this.coneTexture);
-            this.gl.activeTexture(this.gl.TEXTURE1);
-            this.gl.drawElements(this.gl.TRIANGLES, this.coneIndices.length, this.gl.UNSIGNED_SHORT, 0);
+            this.renderObject(
+                this.sphereBuffers,
+                this.worldMatrixSphere,
+                this.projMatrixSphere,
+                this.viewMatrixSphere,
+                this.iceTexture,
+                angle,
+                rotationAxis,
+                identityMatrix,
+                rotationMatrix,
+                this.sphereIndices
+            );
+            this.renderObject(
+                this.coneBuffers,
+                this.worldMatrixCone,
+                this.projMatrixCone,
+                this.viewMatrixCone,
+                this.coneTexture,
+                angle,
+                rotationAxis,
+                identityMatrix,
+                rotationMatrix,
+                this.coneIndices
+            );
 
             requestAnimationFrame(loop);
         };
-
         requestAnimationFrame(loop);
     }
 
+    renderObject(
+        buffer,
+        worldMatrix,
+        projMatrix,
+        viewMatrix,
+        texture,
+        angle,
+        rotationAxis,
+        identityMatrix,
+        rotationMatrix,
+        indices
+    ) {
+        this.gl.enableVertexAttribArray(this.posAttr);
+        this.gl.enableVertexAttribArray(this.texCoordAttr);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer.vertexBuffer);
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
+
+        mat4.rotate(rotationMatrix, identityMatrix, angle, rotationAxis);
+        mat4.identity(worldMatrix);
+        mat4.mul(worldMatrix, worldMatrix, rotationMatrix);
+
+        this.gl.uniformMatrix4fv(
+            this.mWorldUniform,
+            this.gl.FALSE,
+            worldMatrix
+        );
+        this.gl.uniformMatrix4fv(this.mViewUniform, this.gl.FALSE, viewMatrix);
+        this.gl.uniformMatrix4fv(this.mProjUniform, this.gl.FALSE, projMatrix);
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.drawElements(
+            this.gl.TRIANGLES,
+            indices.length,
+            this.gl.UNSIGNED_SHORT,
+            0
+        );
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+
+        this.gl.disableVertexAttribArray(this.posAttr);
+        this.gl.disableVertexAttribArray(this.texCoordAttr);
+    }
 }
 
 new Casquinha("casquinha-sorvete");

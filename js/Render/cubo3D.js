@@ -127,30 +127,25 @@ class Cubo3D extends WebGL {
         const xRotationMatrix = mat4.create();
         const yRotationMatrix = mat4.create();
 
-        const loop = () => {
-            angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
-            mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
-            mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-            mat4.mul(this.worldMatrix, yRotationMatrix, xRotationMatrix);
-            this.gl.uniformMatrix4fv(
-                this.matWorldUniform,
-                this.gl.FALSE,
-                this.worldMatrix
-            );
+        angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
+        mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
+        mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
+        mat4.mul(this.worldMatrix, yRotationMatrix, xRotationMatrix);
+        this.gl.uniformMatrix4fv(
+            this.matWorldUniform,
+            this.gl.FALSE,
+            this.worldMatrix
+        );
 
-            this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            this.gl.drawElements(
-                this.gl.TRIANGLES,
-                boxIndices.length,
-                this.gl.UNSIGNED_SHORT,
-                0
-            );
-
-            requestAnimationFrame(loop);
-        };
-
-        requestAnimationFrame(loop);
+        this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.drawElements(
+            this.gl.TRIANGLES,
+            boxIndices.length,
+            this.gl.UNSIGNED_SHORT,
+            0
+        );
+        requestAnimationFrame(() => this.render());
     }
 }
 
