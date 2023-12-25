@@ -8,6 +8,10 @@ export class WebGL {
             alert('Your browser does not support WebGL');
             return;
         }
+        const ext = this.gl.getExtension('OES_element_index_uint');
+        if (!ext) {
+            console.error('OES_element_index_uint is not supported on this platform');
+        }
 
         this.setupWebGL();
         this.setupShaders();
