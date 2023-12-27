@@ -1,4 +1,4 @@
-export const RGBtoHSV = (r, g, b) => {
+export const RGBtoHSVWithAlpha = (r, g, b, a) => {
     r /= 255;
     g /= 255;
     b /= 255;
@@ -19,10 +19,10 @@ export const RGBtoHSV = (r, g, b) => {
     const s = max === 0 ? 0 : d / max;
     const v = max;
 
-    return { h, s, v };
+    return [h, s, v, a];
 };
 
-export const HSVtoRGB = (h, s, v) => {
+export const HSVtoRGBWithAlpha = (h, s, v, a) => {
     let r, g, b;
     const i = Math.floor(h * 6);
     const f = h * 6 - i;
@@ -39,6 +39,5 @@ export const HSVtoRGB = (h, s, v) => {
         case 5: (r = v), (g = p), (b = q); break;
     }
 
-    return [r, g, b];
-
+    return [r, g, b, a];
 };

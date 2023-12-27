@@ -89,14 +89,14 @@ class Casquinha extends WebGL {
         this.coneVertices = cylinder.vertices;
         this.coneIndices = cylinder.indices;
 
-        this.coneBuffers = this.createBuffer(
-            this.coneVertices,
-            this.coneIndices
-        );
-
         this.sphereBuffers = this.createBuffer(
             this.sphereVertices,
             this.sphereIndices
+        );
+
+        this.coneBuffers = this.createBuffer(
+            this.coneVertices,
+            this.coneIndices
         );
 
         this.gl.vertexAttribPointer(

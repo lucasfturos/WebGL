@@ -19,7 +19,8 @@ class ConeHSV extends WebGL {
             this.coneHeight,
             radiusTop,
             radiusBottom,
-            coneSlices
+            coneSlices,
+
         );
 
         this.coneVertices = cylinder.vertices;
@@ -57,11 +58,17 @@ class ConeHSV extends WebGL {
 
         this.gl.useProgram(this.program);
 
-        const heightLocation = this.gl.getUniformLocation(
+        const heightUniform = this.gl.getUniformLocation(
             this.program,
             "height"
         );
-        this.gl.uniform1f(heightLocation, this.coneHeight);
+        this.gl.uniform1f(heightUniform, this.coneHeight);
+        this.matWorldUniform = this.gl.getUniformLocation(
+            this.program,
+            "mWorld"
+        );
+        this.matViewUniform = this.gl.getUniformLocation(this.program, "mView");
+        this.matProjUniform = this.gl.getUniformLocation(this.program, "mProj");
     }
 
     setupBuffers() {
@@ -81,28 +88,30 @@ class ConeHSV extends WebGL {
             this.gl.STATIC_DRAW
         );
 
-        const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
+        const posAttr = this.gl.getAttribLocation(this.program, "vPosition");
+        const colorAttr = this.gl.getAttribLocation(this.program, "vColor");
 
         this.gl.vertexAttribPointer(
             posAttr,
             3,
             this.gl.FLOAT,
             this.gl.FALSE,
-            7 * Float32Array.BYTES_PER_ELEMENT,
+            6 * Float32Array.BYTES_PER_ELEMENT,
             0
         );
-
+        this.gl.vertexAttribPointer(
+            colorAttr,
+            3,
+            this.gl.FLOAT,
+            this.gl.FALSE,
+            6 * Float32Array.BYTES_PER_ELEMENT,
+            3 * Float32Array.BYTES_PER_ELEMENT
+        );
         this.gl.enableVertexAttribArray(posAttr);
+        this.gl.enableVertexAttribArray(colorAttr);
     }
 
     setupMatrices() {
-        this.matWorldUniform = this.gl.getUniformLocation(
-            this.program,
-            "mWorld"
-        );
-        this.matViewUniform = this.gl.getUniformLocation(this.program, "mView");
-        this.matProjUniform = this.gl.getUniformLocation(this.program, "mProj");
-
         this.worldMatrix = mat4.create();
         this.viewMatrix = mat4.create();
         this.projMatrix = mat4.create();
@@ -136,7 +145,7 @@ class ConeHSV extends WebGL {
 
     render() {
         let angle = 0.0;
-        const rotationAxis = [1, 1, 1];
+        const rotationAxis = [1, 0, 1];
         const identityMatrix = mat4.create();
         const rotationMatrix = mat4.create();
 
