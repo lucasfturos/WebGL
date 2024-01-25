@@ -218,51 +218,6 @@ class Casquinha extends WebGL {
         );
     }
 
-    render() {
-        const identityMatrix = mat4.create();
-        const rotationMatrix = mat4.create();
-
-        const loop = () => {
-            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-            const angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
-            const rotationAxis = [0, 0, 1];
-
-            // Renderizar a esfera
-            this.renderObject(
-                this.sphereBuffers,
-                this.worldMatrixSphere,
-                this.projMatrixSphere,
-                this.viewMatrixSphere,
-                this.iceTexture,
-                angle,
-                rotationAxis,
-                identityMatrix,
-                rotationMatrix,
-                this.sphereIndices
-            );
-
-            // Renderizar o cone
-            this.renderObject(
-                this.coneBuffers,
-                this.worldMatrixCone,
-                this.projMatrixCone,
-                this.viewMatrixCone,
-                this.coneTexture,
-                angle,
-                rotationAxis,
-                identityMatrix,
-                rotationMatrix,
-                this.coneIndices
-            );
-
-            requestAnimationFrame(loop);
-        };
-
-        requestAnimationFrame(loop);
-    }
-
     renderObject(
         buffer,
         worldMatrix,
@@ -308,6 +263,51 @@ class Casquinha extends WebGL {
 
         this.gl.disableVertexAttribArray(this.posAttr);
         this.gl.disableVertexAttribArray(this.texCoordAttr);
+    }
+
+    render() {
+        const identityMatrix = mat4.create();
+        const rotationMatrix = mat4.create();
+
+        const loop = () => {
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+            const angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
+            const rotationAxis = [0, 0, 1];
+
+            // Renderizar o cone
+            this.renderObject(
+                this.coneBuffers,
+                this.worldMatrixCone,
+                this.projMatrixCone,
+                this.viewMatrixCone,
+                this.coneTexture,
+                angle,
+                rotationAxis,
+                identityMatrix,
+                rotationMatrix,
+                this.coneIndices
+            );
+
+            // Renderizar a esfera
+            this.renderObject(
+                this.sphereBuffers,
+                this.worldMatrixSphere,
+                this.projMatrixSphere,
+                this.viewMatrixSphere,
+                this.iceTexture,
+                angle,
+                rotationAxis,
+                identityMatrix,
+                rotationMatrix,
+                this.sphereIndices
+            );
+
+            requestAnimationFrame(loop);
+        };
+
+        requestAnimationFrame(loop);
     }
 
 }
