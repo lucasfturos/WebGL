@@ -12,7 +12,8 @@ class Casquinha extends WebGL {
         super(canvasID);
 
         this.setupShaders();
-        this.setupBuffers();
+        this.setupBufferSphere();
+        this.setupBufferCone();
         this.setupTexture();
         this.setupMatrices();
         this.render();
@@ -65,14 +66,21 @@ class Casquinha extends WebGL {
         this.gl.uniform1i(this.coneTextureUniform, 1);
     }
 
-    setupBuffers() {
+    setupBufferSphere() {
         // Setup Esfera
-        this.radiusSphere = 2;
+        const radiusSphere = 2.0;
         const numSegments = 20;
-        const sphere = new Sphere(this.radiusSphere, numSegments, [], true);
+        const sphere = new Sphere(radiusSphere, numSegments, [], true);
         this.sphereVertices = sphere.vertices;
         this.sphereIndices = sphere.indices;
 
+        this.sphereBuffers = this.createBuffer(
+            this.sphereVertices,
+            this.sphereIndices
+        );
+    }
+
+    setupBufferCone() {
         // Setup Cone
         const radiusTop = 2.0;
         const radiusBottom = 0.0;
@@ -88,32 +96,9 @@ class Casquinha extends WebGL {
         );
         this.coneVertices = cylinder.vertices;
         this.coneIndices = cylinder.indices;
-
-        this.sphereBuffers = this.createBuffer(
-            this.sphereVertices,
-            this.sphereIndices
-        );
-
         this.coneBuffers = this.createBuffer(
             this.coneVertices,
             this.coneIndices
-        );
-
-        this.gl.vertexAttribPointer(
-            this.posAttr,
-            3,
-            this.gl.FLOAT,
-            this.gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            0
-        );
-        this.gl.vertexAttribPointer(
-            this.texCoordAttr,
-            2,
-            this.gl.FLOAT,
-            this.gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
         );
     }
 
@@ -184,15 +169,10 @@ class Casquinha extends WebGL {
         this.worldMatrixSphere = mat4.create();
         this.viewMatrixSphere = mat4.create();
         this.projMatrixSphere = mat4.create();
-
-        this.worldMatrixCone = mat4.create();
-        this.viewMatrixCone = mat4.create();
-        this.projMatrixCone = mat4.create();
-
         mat4.lookAt(
             this.viewMatrixSphere,
-            [0.0, -12.0, 0.0],
-            [0.0, 0.0, -1.9],
+            [0.0, -13.0, 0.0],
+            [0.0, 0.0, -0.8],
             [0.0, 0.0, 1.0]
         );
         mat4.perspective(
@@ -203,6 +183,9 @@ class Casquinha extends WebGL {
             100.0
         );
 
+        this.worldMatrixCone = mat4.create();
+        this.viewMatrixCone = mat4.create();
+        this.projMatrixCone = mat4.create();
         mat4.lookAt(
             this.viewMatrixCone,
             [0.0, -9.0, 0.0],
@@ -234,6 +217,22 @@ class Casquinha extends WebGL {
         this.gl.enableVertexAttribArray(this.texCoordAttr);
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer.vertexBuffer);
+        this.gl.vertexAttribPointer(
+            this.posAttr,
+            3,
+            this.gl.FLOAT,
+            this.gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            0
+        );
+        this.gl.vertexAttribPointer(
+            this.texCoordAttr,
+            2,
+            this.gl.FLOAT,
+            this.gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            3 * Float32Array.BYTES_PER_ELEMENT
+        );
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
 
         mat4.rotate(rotationMatrix, identityMatrix, angle, rotationAxis);
@@ -276,20 +275,6 @@ class Casquinha extends WebGL {
             const angle = (performance.now() / 1000 / 6) * 2 * Math.PI;
             const rotationAxis = [0, 0, 1];
 
-            // Renderizar o cone
-            this.renderObject(
-                this.coneBuffers,
-                this.worldMatrixCone,
-                this.projMatrixCone,
-                this.viewMatrixCone,
-                this.coneTexture,
-                angle,
-                rotationAxis,
-                identityMatrix,
-                rotationMatrix,
-                this.coneIndices
-            );
-
             // Renderizar a esfera
             this.renderObject(
                 this.sphereBuffers,
@@ -304,12 +289,25 @@ class Casquinha extends WebGL {
                 this.sphereIndices
             );
 
+            // // Renderizar o cone
+            this.renderObject(
+                this.coneBuffers,
+                this.worldMatrixCone,
+                this.projMatrixCone,
+                this.viewMatrixCone,
+                this.coneTexture,
+                angle,
+                rotationAxis,
+                identityMatrix,
+                rotationMatrix,
+                this.coneIndices
+            );
+
             requestAnimationFrame(loop);
         };
 
         requestAnimationFrame(loop);
     }
-
 }
 
 new Casquinha("casquinha-sorvete");
