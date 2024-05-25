@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Plot Obj File</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <script type="module" src="../js/Util/control-painel.js"></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="display-control">
+                <div class="card">
+                    <div class="control-container">
+                        <label for="file-type" class="label-type-control"
+                            >File Type:</label
+                        >
+                        <select id="file-type">
+                            <option value="default">Default</option>
+                            <option value="local">Local</option>
+                            <option value="url">URL</option>
+                        </select>
+                    </div>
+                    <div class="control-container">
+                        <div id="local-file">
+                            <label for="input-file" class="label-control"
+                                >File Obj:</label
+                            >
+                            <label for="input-file" class="label-file"
+                                >Enviar arquivo</label
+                            >
+                            <input type="file" id="input-file" multiple />
+                            <span class="file-directory"></span>
+                        </div>
+
+                        <div id="url-file">
+                            <label for="input-url" class="label-control"
+                                >URL Obj:</label
+                            >
+                            <input type="text" id="input-url" />
+                        </div>
+                    </div>
+                    <input type="button" id="load-file-btn" value="Load File" />
+
+                    <div class="control-container">
+                        <label for="" class="label-control">Scale:</label>
+                        <label for="" class="label-value" id="scale-value"
+                            >1</label
+                        >
+                        <input
+                            type="range"
+                            id="input-scale-range"
+                            class="range-control"
+                            min="0.1"
+                            max="5"
+                            step="0.1"
+                            value="1"
+                        />
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br /><br />
+            <canvas id="plotObj" width="650" height="400">
+                Your browser does not support HTML5!!!
+            </canvas>
+            <p>Plot Obj File - WebGL</p>
+            <a class="btn7" href="..">
+                <span>Voltar</span>
+            </a>
+            <br />
+        </div>
+    </body>
+</html>
