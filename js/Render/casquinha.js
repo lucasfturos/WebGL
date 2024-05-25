@@ -15,6 +15,8 @@ class Casquinha extends WebGL {
         this.setupBufferSphere();
         this.setupBufferCone();
         this.setupTexture();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -159,7 +161,6 @@ class Casquinha extends WebGL {
         ];
 
         const loop = () => {
-            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
             const angle = (performance.now() / 1000 / 6) * 2 * Math.PI;

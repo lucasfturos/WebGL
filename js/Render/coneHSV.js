@@ -19,8 +19,7 @@ class ConeHSV extends WebGL {
             this.coneHeight,
             radiusTop,
             radiusBottom,
-            coneSlices,
-
+            coneSlices
         );
 
         this.coneVertices = cylinder.vertices;
@@ -29,6 +28,8 @@ class ConeHSV extends WebGL {
         // Setup WebGL
         this.setupShaders();
         this.setupBuffers();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -116,12 +117,7 @@ class ConeHSV extends WebGL {
         this.viewMatrix = mat4.create();
         this.projMatrix = mat4.create();
 
-        mat4.lookAt(
-            this.viewMatrix,
-            [0, -12, 0],
-            [0, 0, 0],
-            [0, 0, -1]
-        );
+        mat4.lookAt(this.viewMatrix, [0, -12, 0], [0, 0, 0], [0, 0, -1]);
 
         mat4.perspective(
             this.projMatrix,

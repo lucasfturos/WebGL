@@ -210,21 +210,6 @@ export class PlotObj extends WebGL {
         });
     }
 
-    handleResize() {
-        const aspectRatio = 9 / 16;
-        let width = window.innerWidth;
-        let height = 600;
-
-        // if (width / height > aspectRatio) {
-        //     width = height * aspectRatio;
-        // } else {
-        //     height = width / aspectRatio;
-        // }
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    }
-
     updateScale(newScale) {
         this.scale = newScale;
     }

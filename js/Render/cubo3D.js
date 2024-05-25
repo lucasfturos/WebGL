@@ -12,6 +12,8 @@ class Cubo3D extends WebGL {
 
         this.setupShaders();
         this.setupBuffers();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -95,12 +97,7 @@ class Cubo3D extends WebGL {
         this.viewMatrix = mat4.create();
         this.projMatrix = mat4.create();
 
-        mat4.lookAt(
-            this.viewMatrix,
-            [0, 0, -8],
-            [0, 0, 0],
-            [0, 1, 0]
-        );
+        mat4.lookAt(this.viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
         mat4.perspective(
             this.projMatrix,
             glMatrix.toRadian(45),

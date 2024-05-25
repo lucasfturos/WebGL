@@ -6,7 +6,6 @@ import {
     mat4,
 } from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm";
 
-
 class BuleUtah extends WebGL {
     constructor(canvasID, vertices, indices) {
         super(canvasID);
@@ -17,6 +16,8 @@ class BuleUtah extends WebGL {
         if (this.teapot_indices && this.teapot_vertices) {
             this.setupShaders();
             this.setupBuffers();
+            this.handleResize();
+            window.addEventListener("resize", () => this.handleResize());
             this.setupMatrices();
             this.render();
         } else {
@@ -66,10 +67,7 @@ class BuleUtah extends WebGL {
             this.gl.STATIC_DRAW
         );
 
-        const posAttr = this.gl.getAttribLocation(
-            this.program,
-            "vertPosition"
-        );
+        const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
 
         this.gl.vertexAttribPointer(
             posAttr,
@@ -135,7 +133,11 @@ class BuleUtah extends WebGL {
             const escalaY = 1.0;
             const escalaZ = 1.0;
 
-            mat4.scale(this.worldMatrix, this.worldMatrix, [escalaX, escalaY, escalaZ]);
+            mat4.scale(this.worldMatrix, this.worldMatrix, [
+                escalaX,
+                escalaY,
+                escalaZ,
+            ]);
             mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
             mat4.multiply(this.worldMatrix, yRotationMatrix, this.worldMatrix);
 

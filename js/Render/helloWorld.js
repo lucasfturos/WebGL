@@ -7,6 +7,8 @@ class HelloWorld extends WebGL {
 
         this.setupShaders();
         this.setupBuffers();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.render();
     }
 
@@ -38,7 +40,7 @@ class HelloWorld extends WebGL {
     setupBuffers() {
         this.triangleVertices = [
             // x, y  | R, G, B
-            0.0, 0.5, 1.0, 0.0, 0.0, -0.5, -0.5, 0.0, 1.0, 0.0, 0.5, -0.5, 0.0,
+            0.0, 0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.0, 1.0, 0.0, 0.5, -0.5, 0.0,
             0.0, 1.0,
         ];
         const triangleVertex = this.gl.createBuffer();

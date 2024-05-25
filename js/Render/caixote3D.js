@@ -13,6 +13,8 @@ export class Caixote3D extends WebGL {
         this.setupShaders();
         this.setupBuffers();
         this.setupTexture();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -59,10 +61,7 @@ export class Caixote3D extends WebGL {
             this.gl.STATIC_DRAW
         );
 
-        const posAttr = this.gl.getAttribLocation(
-            this.program,
-            "vertPosition"
-        );
+        const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
         const texCoordAttr = this.gl.getAttribLocation(
             this.program,
             "vertTexCoord"
@@ -128,14 +127,8 @@ export class Caixote3D extends WebGL {
             this.program,
             "mWorld"
         );
-        this.matViewUniform = this.gl.getUniformLocation(
-            this.program,
-            "mView"
-        );
-        this.matProjUniform = this.gl.getUniformLocation(
-            this.program,
-            "mProj"
-        );
+        this.matViewUniform = this.gl.getUniformLocation(this.program, "mView");
+        this.matProjUniform = this.gl.getUniformLocation(this.program, "mProj");
 
         this.worldMatrix = mat4.create();
         this.viewMatrix = mat4.create();
@@ -193,4 +186,4 @@ export class Caixote3D extends WebGL {
     }
 }
 
-new Caixote3D('caixote3D');
+new Caixote3D("caixote3D");

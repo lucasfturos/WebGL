@@ -14,6 +14,8 @@ class TriangleRotate extends WebGL {
 
         this.setupShaders();
         this.setupBuffers();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -46,9 +48,8 @@ class TriangleRotate extends WebGL {
     setupBuffers() {
         this.triangleVertices = [
             // x, y  | R, G, B
-            0.0, 0.5, 1.0, 0.0, 0.0,
-            -0.5, -0.5, 0.0, 1.0, 0.0,
-            0.5, -0.5, 0.0, 0.0, 1.0,
+            0.0, 0.5, 1.0, 0.0, 0.0, -0.5, -0.5, 0.0, 1.0, 0.0, 0.5, -0.5, 0.0,
+            0.0, 1.0,
         ];
         const triangleVertex = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, triangleVertex);
@@ -148,4 +149,4 @@ class TriangleRotate extends WebGL {
     }
 }
 
-new TriangleRotate('triangle-rotate');
+new TriangleRotate("triangle-rotate");

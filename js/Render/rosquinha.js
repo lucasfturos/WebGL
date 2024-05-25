@@ -14,13 +14,21 @@ class Rosquinha extends WebGL {
         const innerRadius = 0.6;
         const outerRadius = 0.8;
         const numSegments = 50;
-        const torus = new Torus(innerRadius, outerRadius, numSegments, [], true);
+        const torus = new Torus(
+            innerRadius,
+            outerRadius,
+            numSegments,
+            [],
+            true
+        );
         this.torusVertices = torus.vertices;
         this.torusIndices = torus.indices;
 
         this.setupShaders();
         this.setupBuffers();
         this.setupTexture();
+        this.handleResize();
+        window.addEventListener("resize", () => this.handleResize());
         this.setupMatrices();
         this.render();
     }
@@ -72,7 +80,10 @@ class Rosquinha extends WebGL {
         );
 
         const posAttr = this.gl.getAttribLocation(this.program, "vPosition");
-        const texCoordAttr = this.gl.getAttribLocation(this.program, "vTexCoord");
+        const texCoordAttr = this.gl.getAttribLocation(
+            this.program,
+            "vTexCoord"
+        );
 
         this.gl.vertexAttribPointer(
             posAttr,
@@ -148,16 +159,8 @@ class Rosquinha extends WebGL {
             100.0
         );
 
-        this.gl.uniformMatrix4fv(
-            this.mViewUniform,
-            this.gl.FALSE,
-            viewMatrix
-        );
-        this.gl.uniformMatrix4fv(
-            this.mProjUniform,
-            this.gl.FALSE,
-            projMatrix
-        );
+        this.gl.uniformMatrix4fv(this.mViewUniform, this.gl.FALSE, viewMatrix);
+        this.gl.uniformMatrix4fv(this.mProjUniform, this.gl.FALSE, projMatrix);
     }
 
     render() {

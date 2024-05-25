@@ -98,6 +98,12 @@ export class WebGL {
         return texture;
     }
 
+    handleResize(width = window.innerWidth, height = 600) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    }
+
     renderObject(
         buffer,
         worldMatrix,
