@@ -6,7 +6,7 @@ html,
 body {
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -389,4 +389,11 @@ input[type="range"]::-moz-range-thumb {
     border-radius: 50%;
     border: 1px solid rgba(153, 0, 204, 1);
     box-shadow: -407px 0 0 400px rgba(153, 0, 204, 1);
+}
+
+/* Smartphone port */
+@media screen and (max-width: 25em) {
+    .card {
+        max-width: 70%;
+    }
 }

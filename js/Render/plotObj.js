@@ -19,8 +19,13 @@ export class PlotObj extends WebGL {
         if (this.object_indices && this.object_vertices) {
             this.setupShaders();
             this.setupBuffers();
+
+            this.handleResize();
+            window.addEventListener("resize", () => this.handleResize());
             this.setupMatrices();
+
             this.initMouseControl();
+            this.initTouchControl();
             this.render();
         } else {
             console.error("Error loading teapot data.");
@@ -155,6 +160,69 @@ export class PlotObj extends WebGL {
             this.lastMouseX = newX;
             this.lastMouseY = newY;
         });
+    }
+
+    initTouchControl() {
+        this.canvas.addEventListener("touchstart", (event) => {
+            this.lastTouchX = event.touches[0].clientX;
+            this.lastTouchY = event.touches[0].clientY;
+        });
+
+        this.canvas.addEventListener("touchmove", (event) => {
+            if (this.lastTouchX && this.lastTouchY) {
+                const newX = event.touches[0].clientX;
+                const newY = event.touches[0].clientY;
+
+                const deltaX = newX - this.lastTouchX;
+                const deltaY = newY - this.lastTouchY;
+
+                const rotationMatrix = mat4.create();
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaX / 5),
+                    [0, 1, 0]
+                );
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaY / 5),
+                    [1, 0, 0]
+                );
+
+                mat4.multiply(this.viewMatrix, this.viewMatrix, rotationMatrix);
+
+                this.gl.useProgram(this.program);
+                this.gl.uniformMatrix4fv(
+                    this.matViewUniform,
+                    this.gl.FALSE,
+                    this.viewMatrix
+                );
+
+                this.lastTouchX = newX;
+                this.lastTouchY = newY;
+            }
+        });
+
+        this.canvas.addEventListener("touchend", () => {
+            this.lastTouchX = null;
+            this.lastTouchY = null;
+        });
+    }
+
+    handleResize() {
+        const aspectRatio = 9 / 16;
+        let width = window.innerWidth;
+        let height = 600;
+
+        // if (width / height > aspectRatio) {
+        //     width = height * aspectRatio;
+        // } else {
+        //     height = width / aspectRatio;
+        // }
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
 
     updateScale(newScale) {
