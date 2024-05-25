@@ -48,7 +48,8 @@ const loadFileFromURL = async (url) => {
 
 const loadDefaultObj = async () => {
     try {
-        const objFile = new ReadObjectFile("../../obj/teapot.obj", null);
+        const objFile = new ReadObjectFile("/WebGL/obj/teapot.obj", null);
+        // const objFile = new ReadObjectFile("../../obj/teapot.obj", null);
         const { vertices, faces } = await objFile.loadFile();
         return { vertices, faces };
     } catch (error) {
