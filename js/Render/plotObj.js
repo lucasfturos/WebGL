@@ -12,8 +12,6 @@ export class PlotObj extends WebGL {
         this.object_indices = indices;
         this.object_vertices = vertices;
         this.scale = scale;
-        this.lastMouseX = null;
-        this.lastMouseY = null;
         this.rotationMatrix = mat4.create();
 
         if (this.object_indices && this.object_vertices) {
@@ -23,9 +21,6 @@ export class PlotObj extends WebGL {
             this.handleResize();
             window.addEventListener("resize", () => this.handleResize());
             this.setupMatrices();
-
-            this.initMouseControl();
-            this.initTouchControl();
             this.render();
         } else {
             console.error("Error loading teapot data.");
@@ -67,6 +62,7 @@ export class PlotObj extends WebGL {
                 "Failed to get the location of one or more uniforms."
             );
         }
+        this.gl.useProgram(this.program);
     }
 
     setupBuffers() {
@@ -75,22 +71,15 @@ export class PlotObj extends WebGL {
             this.object_indices
         );
         const posAttr = this.gl.getAttribLocation(this.program, "vertPosition");
-        if (posAttr === -1) {
-            console.error(
-                "Failed to get the attribute location for vertPosition."
-            );
-        } else {
-            this.gl.enableVertexAttribArray(posAttr);
-            this.gl.vertexAttribPointer(
-                posAttr,
-                3,
-                this.gl.FLOAT,
-                this.gl.FALSE,
-                6 * Float32Array.BYTES_PER_ELEMENT,
-                0
-            );
-        }
         this.gl.enableVertexAttribArray(posAttr);
+        this.gl.vertexAttribPointer(
+            posAttr,
+            3,
+            this.gl.FLOAT,
+            this.gl.FALSE,
+            6 * Float32Array.BYTES_PER_ELEMENT,
+            0
+        );
     }
 
     setupMatrices() {
@@ -104,6 +93,7 @@ export class PlotObj extends WebGL {
             [0.0, 1.5, 0.0],
             [0.0, 1.0, 0.0]
         );
+
         mat4.perspective(
             this.projMatrix,
             glMatrix.toRadian(60),
@@ -111,103 +101,28 @@ export class PlotObj extends WebGL {
             0.1,
             100.0
         );
-        this.gl.useProgram(this.program);
-        this.gl.uniformMatrix4fv(
-            this.matViewUniform,
-            this.gl.FALSE,
-            this.viewMatrix
+
+        this.handleMouseControl(
+            this.program,
+            this.viewMatrix,
+            this.matViewUniform
         );
+        this.handleTouchControl(
+            this.program,
+            this.viewMatrix,
+            this.matViewUniform
+        );
+
         this.gl.uniformMatrix4fv(
             this.matProjUniform,
             this.gl.FALSE,
             this.projMatrix
         );
-    }
-
-    initMouseControl() {
-        this.canvas.addEventListener("mousemove", (event) => {
-            const newX = event.clientX;
-            const newY = event.clientY;
-
-            if (this.lastMouseX !== null && this.lastMouseY !== null) {
-                const deltaX = newX - this.lastMouseX;
-                const deltaY = newY - this.lastMouseY;
-
-                const rotationMatrix = mat4.create();
-                mat4.rotate(
-                    rotationMatrix,
-                    rotationMatrix,
-                    glMatrix.toRadian(deltaX / 5),
-                    [0, 1, 0]
-                );
-                mat4.rotate(
-                    rotationMatrix,
-                    rotationMatrix,
-                    glMatrix.toRadian(deltaY / 5),
-                    [1, 0, 0]
-                );
-
-                mat4.multiply(this.viewMatrix, this.viewMatrix, rotationMatrix);
-
-                this.gl.useProgram(this.program);
-                this.gl.uniformMatrix4fv(
-                    this.matViewUniform,
-                    this.gl.FALSE,
-                    this.viewMatrix
-                );
-            }
-
-            this.lastMouseX = newX;
-            this.lastMouseY = newY;
-        });
-    }
-
-    initTouchControl() {
-        this.canvas.addEventListener("touchstart", (event) => {
-            this.lastTouchX = event.touches[0].clientX;
-            this.lastTouchY = event.touches[0].clientY;
-        });
-
-        this.canvas.addEventListener("touchmove", (event) => {
-            if (this.lastTouchX && this.lastTouchY) {
-                const newX = event.touches[0].clientX;
-                const newY = event.touches[0].clientY;
-
-                const deltaX = newX - this.lastTouchX;
-                const deltaY = newY - this.lastTouchY;
-
-                const rotationMatrix = mat4.create();
-                mat4.rotate(
-                    rotationMatrix,
-                    rotationMatrix,
-                    glMatrix.toRadian(deltaX / 5),
-                    [0, 1, 0]
-                );
-                mat4.rotate(
-                    rotationMatrix,
-                    rotationMatrix,
-                    glMatrix.toRadian(deltaY / 5),
-                    [1, 0, 0]
-                );
-
-                mat4.multiply(this.viewMatrix, this.viewMatrix, rotationMatrix);
-
-                this.gl.useProgram(this.program);
-                this.gl.uniformMatrix4fv(
-                    this.matViewUniform,
-                    this.gl.FALSE,
-                    this.viewMatrix
-                );
-
-                this.lastTouchX = newX;
-                this.lastTouchY = newY;
-            }
-        });
-
-        this.canvas.addEventListener("touchend", () => {
-            this.lastTouchX = null;
-            this.lastTouchY = null;
-        });
+        this.gl.uniformMatrix4fv(
+            this.matViewUniform,
+            this.gl.FALSE,
+            this.viewMatrix
+        );
     }
 
     updateScale(newScale) {

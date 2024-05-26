@@ -1,4 +1,7 @@
-import { mat4 } from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm";
+import {
+    mat4,
+    glMatrix,
+} from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm";
 
 export class WebGL {
     constructor(canvasID) {
@@ -16,8 +19,17 @@ export class WebGL {
                 "OES_element_index_uint is not supported on this platform"
             );
         }
-
         this.setupWebGL();
+
+        this.canvas.addEventListener("touchstart", (event) =>
+            event.preventDefault()
+        );
+        this.canvas.addEventListener("touchmove", (event) =>
+            event.preventDefault()
+        );
+        this.canvas.addEventListener("touchend", (event) =>
+            event.preventDefault()
+        );
     }
 
     setupWebGL() {
@@ -102,6 +114,87 @@ export class WebGL {
         this.canvas.width = width;
         this.canvas.height = height;
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    handleMouseControl(program, viewMatrix, matViewUniform) {
+        let lastMouseX = null;
+        let lastMouseY = null;
+        this.canvas.addEventListener("mousemove", (event) => {
+            const newX = event.clientX;
+            const newY = event.clientY;
+            if (lastMouseX && lastMouseY) {
+                const deltaX = newX - lastMouseX;
+                const deltaY = newY - lastMouseY;
+
+                const rotationMatrix = mat4.create();
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaX / 5),
+                    [0, 1, 0]
+                );
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaY / 5),
+                    [1, 0, 0]
+                );
+                mat4.multiply(viewMatrix, viewMatrix, rotationMatrix);
+                this.gl.useProgram(program);
+                this.gl.uniformMatrix4fv(
+                    matViewUniform,
+                    this.gl.FALSE,
+                    viewMatrix
+                );
+            }
+            lastMouseX = newX;
+            lastMouseY = newY;
+        });
+    }
+
+    handleTouchControl(program, viewMatrix, matViewUniform) {
+        let lastTouchX = null;
+        let lastTouchY = null;
+        this.canvas.addEventListener("touchstart", (event) => {
+            lastTouchX = event.touches[0].clientX;
+            lastTouchY = event.touches[0].clientY;
+        });
+        this.canvas.addEventListener("touchmove", (event) => {
+            if (lastTouchX && lastTouchY) {
+                const newX = event.touches[0].clientX;
+                const newY = event.touches[0].clientY;
+
+                const deltaX = newX - lastTouchX;
+                const deltaY = newY - lastTouchY;
+
+                const rotationMatrix = mat4.create();
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaX / 5),
+                    [0, 1, 0]
+                );
+                mat4.rotate(
+                    rotationMatrix,
+                    rotationMatrix,
+                    glMatrix.toRadian(deltaY / 5),
+                    [1, 0, 0]
+                );
+                mat4.multiply(viewMatrix, viewMatrix, rotationMatrix);
+                this.gl.useProgram(program);
+                this.gl.uniformMatrix4fv(
+                    matViewUniform,
+                    this.gl.FALSE,
+                    viewMatrix
+                );
+                lastTouchX = newX;
+                lastTouchY = newY;
+            }
+        });
+        this.canvas.addEventListener("touchend", () => {
+            lastTouchX = null;
+            lastTouchY = null;
+        });
     }
 
     renderObject(
